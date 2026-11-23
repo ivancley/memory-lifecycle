@@ -19,7 +19,10 @@ jobs:
     timeout-minutes: 10
 
     steps:
+      # Histórico inteiro: o tamanho de arquivo compara com a base pelo merge-base.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: astral-sh/setup-uv@v5
         with:
@@ -37,8 +40,25 @@ jobs:
       - name: Verificar formatação com ruff
         run: uv run ruff format --check .
 
-      - name: Arquivos pequenos (CLAUDE.md, Tamanho de arquivo)
-        run: git ls-files 'src/**/*.py' 'src/**/*.sql' 'scripts/**/*.py' | xargs --no-run-if-empty uv run python scripts/check_file_size.py
+      # 300 linhas pedem uma fronteira no arquivo *tocado* (CLAUDE.md, Tamanho de arquivo):
+      # quem mexe num módulo grande é quem o divide. A árvore inteira fica com a guarda
+      # tests/guards/test_file_size.py, em 500, na suíte.
+      - name: Arquivos tocados pequenos (CLAUDE.md, Tamanho de arquivo)
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          BEFORE: ${{ github.event.before }}
+        run: |
+          set -euo pipefail
+          if [ -n "$BASE_REF" ]; then
+            base="$(git merge-base "origin/$BASE_REF" HEAD)"
+          elif [ -n "$BEFORE" ] && git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+            base="$BEFORE"
+          else
+            echo "Sem base para comparar (branch nova ou workflow_dispatch); a guarda de 500 cobre a árvore."
+            exit 0
+          fi
+          git diff --name-only --diff-filter=AMR "$base" HEAD -- 'src/**/*.py' 'src/**/*.sql' 'scripts/**/*.py' \
+            | xargs --no-run-if-empty uv run python scripts/check_file_size.py
 
       - name: Verificar tipos (mypy — só aviso até o core estar anotado)
         run: uv run mypy
