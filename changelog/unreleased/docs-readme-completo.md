@@ -9,9 +9,8 @@ de uma vez na branch de release. Este bloco de comentário pode ficar; ele não 
 para o CHANGELOG.
 -->
 
-### Alterado
-- O README passou a apresentar o modelo de memória do começo, em linguagem
-  simples. Uma conversa de exemplo, em tabela, mostra o que a memória sabe a
+### Adicionado
+- Um README que apresenta o modelo de memória do começo, em linguagem simples. Uma conversa de exemplo, em tabela, mostra o que a memória sabe a
   cada mensagem e o que ainda dá para saber do passado. Depois vêm os conceitos:
   o que é uma memória e as suas etiquetas, versões imutáveis, os dois
   relógios (validade e registro), as três perguntas de `recall`, quando usar

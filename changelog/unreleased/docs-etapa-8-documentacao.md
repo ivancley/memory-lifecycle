@@ -20,6 +20,6 @@ para o CHANGELOG.
   tenant, migração junto com o `manage.py migrate`, view na transação do request),
   SQLAlchemy, configuração pelo ambiente, o provedor de embeddings próprio,
   desempenho medido e uso nas suítes de teste.
-- Exemplos executáveis em `exemplos/`: o fluxo de uma conversa com agente
+- Exemplos executáveis em `examples/`: o fluxo de uma conversa com agente
   (recuperar, montar contexto, responder, gravar pela política da aplicação) e o
   mesmo fluxo numa view Django; os dois rodam na suíte.

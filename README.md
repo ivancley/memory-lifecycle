@@ -6,8 +6,9 @@ do seu PostgreSQL (com pgvector), na sua transação, sem servidor extra, framew
 ou ORM, e sem amarrar você a um provedor de LLM.
 
 > **Status:** 0.1.0, testada contra PostgreSQL 16 + pgvector com psycopg 3,
-> psycopg2, o pool do psycopg, Django e SQLAlchemy. Ainda **não publicada** no
-> PyPI; instale a partir do repositório.
+> psycopg2, o pool do psycopg, Django e SQLAlchemy. Antes da 1.0, uma versão
+> `minor` pode quebrar compatibilidade; o [CHANGELOG](https://github.com/ivancley/memory-lifecycle/blob/main/CHANGELOG.md)
+> diz quando.
 
 ## Por que outra biblioteca de memória?
 
@@ -482,18 +483,17 @@ def answer(memory, llm, owner_id, message, project_id):
 ```
 
 O exemplo completo, que roda na suíte, está em
-[`examples/agent_flow.py`](examples/agent_flow.py); a mesma coisa numa view
-Django está em [`examples/django_app/`](examples/django_app/).
+[`examples/agent_flow.py`](https://github.com/ivancley/memory-lifecycle/blob/main/examples/agent_flow.py); a mesma coisa numa view
+Django está em [`examples/django_app/`](https://github.com/ivancley/memory-lifecycle/tree/main/examples/django_app).
 
 ## Instalação
 
-A biblioteca ainda não está no PyPI. Instale do repositório, com o extra do
-driver que a sua aplicação já usa:
+Instale do PyPI com o extra do driver que a sua aplicação já usa:
 
 ```bash
-pip install "memory-lifecycle[psycopg] @ git+https://github.com/ivancley/PyBrain"     # psycopg 3 e pool
-pip install "memory-lifecycle[django] @ git+https://github.com/ivancley/PyBrain"      # Django
-pip install "memory-lifecycle[sqlalchemy] @ git+https://github.com/ivancley/PyBrain"  # SQLAlchemy
+pip install "memory-lifecycle[psycopg]"     # psycopg 3 e pool
+pip install "memory-lifecycle[django]"      # Django
+pip install "memory-lifecycle[sqlalchemy]"  # SQLAlchemy
 ```
 
 O núcleo não tem nenhuma dependência obrigatória: cada adaptador importa o que
@@ -541,7 +541,7 @@ O SQL é o mesmo para psycopg 3 e psycopg2, e a biblioteca não registra nenhum
 adaptador de tipo na sua conexão. Se preferir configurar pelo ambiente,
 `load_provider()` lê a fábrica de `MEMORY_LIFECYCLE_CONNECTION_PROVIDER`
 (`pacote.modulo:funcao`). Detalhes de cada provedor, com Django do começo ao
-fim, em [`docs/integracao.md`](docs/integracao.md).
+fim, em [`docs/integracao.md`](https://github.com/ivancley/memory-lifecycle/blob/main/docs/integracao.md).
 
 ## O seu provedor de embeddings
 
@@ -605,18 +605,18 @@ não abortar a transação da sua aplicação.
 
 ## Documentação
 
-- [`docs/conceitos.md`](docs/conceitos.md): os conceitos deste README com mais
+- [`docs/conceitos.md`](https://github.com/ivancley/memory-lifecycle/blob/main/docs/conceitos.md): os conceitos deste README com mais
   detalhe, incluindo como cada operação aparece no histórico.
-- [`docs/integracao.md`](docs/integracao.md): instalação, cada provedor de
+- [`docs/integracao.md`](https://github.com/ivancley/memory-lifecycle/blob/main/docs/integracao.md): instalação, cada provedor de
   conexão, o seu provedor de embeddings, desempenho e testes.
-- [`docs/glossario.md`](docs/glossario.md): os termos, com o identificador do
+- [`docs/glossario.md`](https://github.com/ivancley/memory-lifecycle/blob/main/docs/glossario.md): os termos, com o identificador do
   código ao lado de cada um (o código é em inglês; a documentação, em português).
-- [`docs/architecture.md`](docs/architecture.md) e [`docs/adr/`](docs/adr/): as
+- [`docs/architecture.md`](https://github.com/ivancley/memory-lifecycle/blob/main/docs/architecture.md) e [`docs/adr/`](https://github.com/ivancley/memory-lifecycle/tree/main/docs/adr): as
   decisões de arquitetura e as alternativas que perderam.
 
 ## Desenvolvimento
 
-O fluxo completo está em [`docs/development-workflow.md`](docs/development-workflow.md).
+O fluxo completo está em [`docs/development-workflow.md`](https://github.com/ivancley/memory-lifecycle/blob/main/docs/development-workflow.md).
 A versão curta:
 
 ```bash
@@ -626,4 +626,4 @@ make quality   # ruff, guardas e a suíte inteira contra o Postgres
 
 ## Licença
 
-MIT. Veja [`LICENSE`](LICENSE).
+MIT. Veja [`LICENSE`](https://github.com/ivancley/memory-lifecycle/blob/main/LICENSE).
