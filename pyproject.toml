@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "memory-lifecycle"
-version = "0.0.0"
+version = "0.1.0"
 description = "Persistent, contextual and bitemporal memory for AI agents, embedded in your PostgreSQL + pgvector. No server, framework or LLM provider required."
 readme = "README.md"
 requires-python = ">=3.11"
