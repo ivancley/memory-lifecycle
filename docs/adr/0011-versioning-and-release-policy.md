@@ -1,6 +1,6 @@
 # ADR 0011 — Versões, compatibilidade de schema e publicação no PyPI
 
-- **Status:** proposto
+- **Status:** aceito
 - **Data:** 2026-11-20
 - **Regra tocada:** regra 7 do `CLAUDE.md` (migrações só acrescentam); Etapa 9 de `.data/planejamento-macro.md`
 - **Módulos afetados:** `migrations`, `pyproject.toml`, `.github/workflows/publish.yml`
