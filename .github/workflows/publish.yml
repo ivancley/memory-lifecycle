@@ -1,0 +1,110 @@
+name: Publish
+
+# Publica no PyPI a versão de uma tag `v*` empurrada em `main`, sem token guardado:
+# o PyPI e o TestPyPI confiam neste workflow por OIDC (Trusted Publishing), pelos
+# "pending publishers" cadastrados com o repositório, este arquivo e o ambiente.
+#
+# A ordem é a do ensaio antes do definitivo:
+#   1. build — wheel e sdist; a tag precisa bater com a versão do pyproject.toml,
+#      o `twine check` precisa passar e o wheel precisa instalar e importar limpo;
+#   2. testpypi — publica no TestPyPI (ambiente `testpypi`, sem aprovação);
+#   3. pypi — espera a aprovação do dono no ambiente `pypi` e publica de verdade.
+# Entre 2 e 3 dá para instalar do TestPyPI e conferir a página antes de aprovar:
+# o PyPI nunca deixa republicar um número de versão, nem depois de um "yank".
+#
+# O ambiente `pypi` só aceita tags `v*` e exige revisor; os dois ficam nas
+# configurações do repositório, não aqui.
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+
+      - name: Instalar Python
+        run: uv python install 3.12
+
+      # Uma tag que não bate com o pyproject publicaria um número que ninguém pediu.
+      - name: A tag bate com a versão do pyproject.toml
+        run: |
+          set -euo pipefail
+          version="$(uv run --no-project python -c 'import tomllib; print(tomllib.load(open("pyproject.toml", "rb"))["project"]["version"])')"
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error title=Versão::a tag é $GITHUB_REF_NAME, mas o pyproject.toml diz $version"
+            exit 1
+          fi
+          echo "Publicando $version"
+
+      - name: Build (wheel e sdist)
+        run: uv build
+
+      - name: Metadados e README renderizáveis
+        run: uvx twine check --strict dist/*
+
+      # Fora do repositório, para importar o pacote instalado e não o `src/`.
+      - name: O wheel instala e importa limpo
+        run: |
+          set -euo pipefail
+          uv venv "$RUNNER_TEMP/smoke"
+          VIRTUAL_ENV="$RUNNER_TEMP/smoke" uv pip install "$(ls dist/*.whl)[psycopg]"
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/smoke/bin/python" -c "import importlib.metadata as m, memory_lifecycle; print(m.version('memory-lifecycle'), len(memory_lifecycle.__all__), 'nomes públicos')"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          if-no-files-found: error
+
+  testpypi:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/project/memory-lifecycle/
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      # `skip-existing`: rodar o workflow de novo (depois de uma falha no passo do
+      # PyPI, por exemplo) não falha por a versão já estar no TestPyPI.
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
+
+  pypi:
+    needs: testpypi
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: pypi
+      url: https://pypi.org/project/memory-lifecycle/
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - uses: pypa/gh-action-pypi-publish@release/v1

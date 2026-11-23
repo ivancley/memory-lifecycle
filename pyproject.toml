@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "memory-lifecycle"
 version = "0.0.0"
-description = "Memória persistente, contextual e bitemporal para agentes de IA sobre PostgreSQL + pgvector. Embarcada, agnóstica de framework e de provedor."
+description = "Persistent, contextual and bitemporal memory for AI agents, embedded in your PostgreSQL + pgvector. No server, framework or LLM provider required."
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
@@ -15,15 +15,21 @@ keywords = ["ai", "agents", "memory", "bitemporal", "postgresql", "pgvector"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
-  "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Typing :: Typed",
   "Topic :: Database",
   "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 # O core tem zero dependências obrigatórias (CLAUDE.md, regra 4). Todo o resto é extra.
 dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/ivancley/memory-lifecycle"
+Documentation = "https://github.com/ivancley/memory-lifecycle/tree/main/docs"
+Changelog = "https://github.com/ivancley/memory-lifecycle/blob/main/CHANGELOG.md"
+Issues = "https://github.com/ivancley/memory-lifecycle/issues"
 
 [project.optional-dependencies]
 psycopg = ["psycopg[binary]>=3.1", "psycopg-pool>=3.1"]
@@ -45,6 +51,12 @@ dev = [
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/memory_lifecycle"]
+
+# O sdist leva só o que reconstrói o pacote. A suíte fica de fora: ela depende de
+# `scripts/`, do CLAUDE.md e de um Postgres, e não rodaria a partir dele. App de teste,
+# specs, ADRs e o contexto do agente ficam no repositório.
+[tool.hatch.build.targets.sdist]
+only-include = ["src", "README.md", "LICENSE", "CHANGELOG.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

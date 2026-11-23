@@ -7,13 +7,12 @@ rodam na suíte deste repositório.
 
 ## Instalação
 
-A biblioteca ainda não está publicada no PyPI. Instale a partir do repositório,
-com o extra do seu provedor de conexão:
+Instale do PyPI com o extra do seu provedor de conexão:
 
 ```bash
-pip install "memory-lifecycle[psycopg] @ git+<url-do-repositório>"   # DSN e pool do psycopg
-pip install "memory-lifecycle[django] @ git+<url-do-repositório>"    # Django
-pip install "memory-lifecycle[sqlalchemy] @ git+<url-do-repositório>" # SQLAlchemy
+pip install "memory-lifecycle[psycopg]"     # DSN e pool do psycopg
+pip install "memory-lifecycle[django]"      # Django
+pip install "memory-lifecycle[sqlalchemy]"  # SQLAlchemy
 ```
 
 O núcleo não tem dependência obrigatória: cada adaptador importa a sua só quando
